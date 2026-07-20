@@ -1,0 +1,313 @@
+.ai-ready-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 8px 12px;
+  border: 1px solid rgba(185, 156, 255, 0.25);
+  border-radius: 999px;
+  color: #e9ddff;
+  background: rgba(185, 156, 255, 0.07);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.ai-ready-badge::before {
+  content: "✦";
+  color: var(--gold);
+}
+
+.visual-guide {
+  padding: 30px 34px 34px;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(90deg, rgba(242, 195, 105, 0.04), transparent 40%),
+    rgba(255, 255, 255, 0.012);
+}
+
+.visual-guide-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 17px;
+}
+
+.visual-guide-heading h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.visual-guide-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.diagram-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.diagram-step {
+  position: relative;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 19px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.016));
+}
+
+.diagram-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: -23px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.diagram-number {
+  position: absolute;
+  top: 11px;
+  left: 12px;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 1px solid rgba(242, 195, 105, 0.35);
+  border-radius: 9px;
+  color: var(--gold-light);
+  background: rgba(242, 195, 105, 0.075);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.diagram-picture {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 118px;
+  margin-bottom: 10px;
+  color: var(--gold-light);
+}
+
+.diagram-picture svg {
+  width: 104px;
+  height: 104px;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 9px 20px rgba(242, 195, 105, 0.12));
+}
+
+.diagram-picture svg .diagram-accent {
+  stroke: var(--violet);
+}
+
+.diagram-picture svg .diagram-fill {
+  fill: rgba(185, 156, 255, 0.12);
+  stroke: var(--violet);
+}
+
+.diagram-step h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  text-align: center;
+}
+
+.diagram-step p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.ai-source-pill {
+  color: #e8dcff;
+  border-color: rgba(185, 156, 255, 0.35);
+  background: rgba(185, 156, 255, 0.08);
+}
+
+.ai-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  max-width: 730px;
+  padding: 12px 14px;
+  border: 1px solid rgba(185, 156, 255, 0.18);
+  border-radius: 14px;
+  color: var(--muted);
+  background: rgba(185, 156, 255, 0.055);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.ai-notice strong {
+  color: #e9ddff;
+}
+
+.ai-loading {
+  position: relative;
+  overflow: hidden;
+  padding: 68px 24px;
+  border: 1px solid rgba(185, 156, 255, 0.18);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(185, 156, 255, 0.12), transparent 44%),
+    rgba(255, 255, 255, 0.018);
+  text-align: center;
+}
+
+.ai-loading-orbit {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 18px;
+  border: 1px solid rgba(242, 195, 105, 0.22);
+  border-radius: 50%;
+  animation: alchemy-spin 2.1s linear infinite;
+}
+
+.ai-loading-orbit::before,
+.ai-loading-orbit::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+
+.ai-loading-orbit::before {
+  width: 12px;
+  height: 12px;
+  top: -6px;
+  left: 31px;
+  background: var(--gold);
+  box-shadow: 0 0 24px rgba(242, 195, 105, 0.8);
+}
+
+.ai-loading-orbit::after {
+  inset: 14px;
+  border: 1px solid rgba(185, 156, 255, 0.35);
+}
+
+.ai-loading h2 {
+  margin: 0 0 9px;
+}
+
+.ai-loading p {
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.ai-progress {
+  width: min(360px, 82%);
+  height: 5px;
+  overflow: hidden;
+  margin: 24px auto 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.ai-progress::after {
+  content: "";
+  display: block;
+  width: 38%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--violet), var(--gold));
+  animation: alchemy-progress 1.35s ease-in-out infinite;
+}
+
+.ai-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.ai-error-code {
+  margin-top: 13px;
+  color: #82768f;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+
+.recipe-card.is-ai {
+  border-color: rgba(185, 156, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(185, 156, 255, 0.05), rgba(255, 255, 255, 0.018));
+}
+
+.recipe-ai-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 7px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  color: #e9ddff;
+  background: rgba(185, 156, 255, 0.1);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+@keyframes alchemy-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes alchemy-progress {
+  0% { transform: translateX(-115%); }
+  50% { transform: translateX(110%); }
+  100% { transform: translateX(280%); }
+}
+
+@media (max-width: 760px) {
+  .visual-guide { padding: 24px; }
+  .visual-guide-heading { display: block; }
+  .visual-guide-heading p { margin-top: 6px; }
+  .diagram-flow { grid-template-columns: 1fr; gap: 13px; }
+  .diagram-step {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    align-items: center;
+  }
+  .diagram-step:not(:last-child)::after {
+    content: "↓";
+    top: auto;
+    right: 50%;
+    bottom: -17px;
+    transform: translateX(50%);
+  }
+  .diagram-picture {
+    grid-row: 1 / 3;
+    width: 96px;
+    height: 88px;
+    margin: 0;
+  }
+  .diagram-picture svg { width: 78px; height: 78px; }
+  .diagram-step h4,
+  .diagram-step p { text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-loading-orbit,
+  .ai-progress::after { animation: none; }
+}
