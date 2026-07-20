@@ -20,9 +20,53 @@ jobs:
           node --check config.js
           node --check app.js
           node --check recipes.js
+          node --check recipe-factory.js
+          for file in recipes-common-*.js; do node --check "$file"; done
           node --check diagrams.js
           node --check service-worker.js
           node --check api/generate.js
+
+      - name: Validate recipe library
+        run: |
+          node <<'NODE'
+          global.window = {};
+          require('./recipes.js');
+          require('./recipe-factory.js');
+          for (let index = 1; index <= 12; index += 1) {
+            require(`./recipes-common-${String(index).padStart(2, '0')}.js`);
+          }
+          require('./diagrams.js');
+
+          const recipes = window.LITTLE_ALCHEMIST_RECIPES;
+          if (!Array.isArray(recipes)) throw new Error('Recipe library is missing');
+          if (recipes.length !== 106) throw new Error(`Expected 106 recipes, received ${recipes.length}`);
+
+          const ids = new Set();
+          const titles = new Set();
+          for (const recipe of recipes) {
+            if (!recipe.id || !recipe.title) throw new Error('Recipe missing id or title');
+            if (ids.has(recipe.id)) throw new Error(`Duplicate recipe id: ${recipe.id}`);
+            if (titles.has(recipe.title)) throw new Error(`Duplicate recipe title: ${recipe.title}`);
+            ids.add(recipe.id);
+            titles.add(recipe.title);
+
+            if (!Array.isArray(recipe.materials) || recipe.materials.length < 2) {
+              throw new Error(`${recipe.id} needs at least two materials`);
+            }
+            if (!Array.isArray(recipe.steps) || recipe.steps.length < 3) {
+              throw new Error(`${recipe.id} needs at least three steps`);
+            }
+            if (!recipe.principle || !Array.isArray(recipe.safety) || recipe.safety.length === 0) {
+              throw new Error(`${recipe.id} is missing principle or safety guidance`);
+            }
+
+            const diagram = recipe.diagram || window.LITTLE_ALCHEMIST_DIAGRAMS?.[recipe.id];
+            if (!Array.isArray(diagram) || diagram.length !== 3) {
+              throw new Error(`${recipe.id} must have exactly three diagram stages`);
+            }
+          }
+          console.log(`Validated ${recipes.length} unique recipes with three-stage diagrams.`);
+          NODE
 
       - name: Check JSON files
         run: |
@@ -35,5 +79,8 @@ jobs:
           test -f styles.css
           test -f enhancements.css
           test -f config.js
+          test -f recipes.js
+          test -f recipe-factory.js
+          test "$(find . -maxdepth 1 -name 'recipes-common-*.js' | wc -l)" -eq 12
           test -f diagrams.js
           test -f api/generate.js
