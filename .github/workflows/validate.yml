@@ -32,14 +32,14 @@ jobs:
           global.window = {};
           require('./recipes.js');
           require('./recipe-factory.js');
-          for (let index = 1; index <= 12; index += 1) {
+          for (let index = 1; index <= 13; index += 1) {
             require(`./recipes-common-${String(index).padStart(2, '0')}.js`);
           }
           require('./diagrams.js');
 
           const recipes = window.LITTLE_ALCHEMIST_RECIPES;
           if (!Array.isArray(recipes)) throw new Error('Recipe library is missing');
-          if (recipes.length !== 106) throw new Error(`Expected 106 recipes, received ${recipes.length}`);
+          if (recipes.length !== 107) throw new Error(`Expected 107 recipes, received ${recipes.length}`);
 
           const ids = new Set();
           const titles = new Set();
@@ -65,6 +65,12 @@ jobs:
               throw new Error(`${recipe.id} must have exactly three diagram stages`);
             }
           }
+
+          const slime = recipes.find(recipe => recipe.id === 'classic-slime');
+          if (!slime || !slime.aliases.includes('史萊姆')) {
+            throw new Error('Classic slime recipe or search alias is missing');
+          }
+
           console.log(`Validated ${recipes.length} unique recipes with three-stage diagrams.`);
           NODE
 
@@ -81,6 +87,7 @@ jobs:
           test -f config.js
           test -f recipes.js
           test -f recipe-factory.js
-          test "$(find . -maxdepth 1 -name 'recipes-common-*.js' | wc -l)" -eq 12
+          test "$(find . -maxdepth 1 -name 'recipes-common-*.js' | wc -l)" -eq 13
+          test -f recipes-common-13.js
           test -f diagrams.js
           test -f api/generate.js
