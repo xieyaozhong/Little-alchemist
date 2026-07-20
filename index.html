@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#161126" />
+  <meta name="description" content="小小煉金術士：輸入想做的成品，取得材料、配方、製作方式、科學原理與安全提醒。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:title" content="小小煉金術士 Little Alchemist" />
+  <meta property="og:description" content="輸入成品，拆解材料、配方、步驟與原理。" />
+  <title>小小煉金術士 Little Alchemist</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="recipes.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要內容</a>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="回到首頁">
+      <span class="brand-mark" aria-hidden="true">⚗</span>
+      <span>
+        <strong>小小煉金術士</strong>
+        <small>Little Alchemist</small>
+      </span>
+    </a>
+    <nav class="header-actions" aria-label="主要導覽">
+      <button id="randomButton" class="ghost-button" type="button">隨機煉成</button>
+      <button id="favoritesButton" class="ghost-button" type="button">收藏 <span id="favoriteCount">0</span></button>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="hero" id="top">
+      <div class="eyebrow">把「想做什麼」變成「下一步做什麼」</div>
+      <h1>輸入成品，<br /><span>拆解它的配方。</span></h1>
+      <p class="hero-copy">搜尋生活科學作品與手作成品，取得材料、工具、比例、步驟、原理、安全提醒與失敗排查。</p>
+
+      <form id="searchForm" class="search-shell" autocomplete="off">
+        <label class="sr-only" for="searchInput">輸入想製作的成品</label>
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="例如：彈力球、氣球火箭、檸檬電池…" maxlength="50" enterkeyhint="search" />
+        <button type="submit">開始煉成</button>
+        <div id="suggestions" class="suggestions" role="listbox" hidden></div>
+      </form>
+
+      <div class="quick-picks" aria-label="熱門搜尋">
+        <span>熱門：</span>
+        <button data-query="彈力球" type="button">彈力球</button>
+        <button data-query="橡皮筋動力車" type="button">橡皮筋動力車</button>
+        <button data-query="熔岩燈" type="button">熔岩燈</button>
+        <button data-query="檸檬電池" type="button">檸檬電池</button>
+      </div>
+    </section>
+
+    <section class="feature-strip" aria-label="功能特色">
+      <article><b>01</b><span><strong>材料拆解</strong><small>數量與替代品</small></span></article>
+      <article><b>02</b><span><strong>步驟配方</strong><small>照順序完成</small></span></article>
+      <article><b>03</b><span><strong>原理解說</strong><small>知道為什麼</small></span></article>
+      <article><b>04</b><span><strong>安全檢查</strong><small>先避開風險</small></span></article>
+    </section>
+
+    <section id="resultSection" class="result-section" aria-live="polite">
+      <div id="emptyState" class="empty-state">
+        <div class="empty-symbol">✦</div>
+        <h2>煉金桌已準備完成</h2>
+        <p>先輸入一個想完成的作品，或從熱門項目開始。</p>
+      </div>
+      <div id="resultContainer"></div>
+    </section>
+
+    <section class="library-section">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">Starter Grimoire</span>
+          <h2>入門煉成圖鑑</h2>
+        </div>
+        <p>第一版採用人工審核的安全配方，避免直接產生未驗證或高風險做法。</p>
+      </div>
+      <div id="recipeGrid" class="recipe-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Little Alchemist · 讓製作、理解與安全在同一張配方裡。</p>
+    <p class="footer-note">所有實驗應由成人評估環境與材料；本網站不能取代專業安全指導。</p>
+  </footer>
+
+  <template id="recipeCardTemplate">
+    <article class="recipe-card">
+      <div class="recipe-card-top">
+        <span class="recipe-emoji"></span>
+        <button class="card-favorite" type="button" aria-label="加入收藏">☆</button>
+      </div>
+      <span class="recipe-category"></span>
+      <h3 class="recipe-title"></h3>
+      <p class="recipe-summary"></p>
+      <div class="recipe-meta"></div>
+      <button class="open-recipe" type="button">查看配方 <span>→</span></button>
+    </article>
+  </template>
+
+  <noscript><p class="noscript">這個網站需要啟用 JavaScript 才能搜尋與顯示配方。</p></noscript>
+</body>
+</html>
