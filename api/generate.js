@@ -137,7 +137,7 @@ function setCors(req, res) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
   }
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
@@ -215,12 +215,72 @@ async function callOpenAI(url, body, apiKey, signal) {
 
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = new Error("OpenAI request failed");
+    const error = new Error(payload?.error?.message || "OpenAI request failed");
     error.status = response.status;
     error.requestId = response.headers.get("x-request-id") || "";
+    error.openaiCode = payload?.error?.code || "";
+    error.openaiType = payload?.error?.type || "";
     throw error;
   }
   return payload;
+}
+
+function mapOpenAIError(error) {
+  const status = Number(error?.status || 0);
+  const detail = `${error?.openaiCode || ""} ${error?.message || ""}`.toLowerCase();
+
+  if (status === 401) {
+    return {
+      status: 502,
+      code: "OPENAI_AUTH_ERROR",
+      error: "OpenAI API Key 無效、已撤銷，或貼入時多了空白。請在 Vercel 更新 OPENAI_API_KEY 後重新部署。"
+    };
+  }
+
+  if (status === 403) {
+    return {
+      status: 502,
+      code: "OPENAI_PERMISSION_ERROR",
+      error: "這把 OpenAI API Key 沒有目前專案或模型的使用權限。請檢查 OpenAI Project 與金鑰權限。"
+    };
+  }
+
+  if (status === 429) {
+    if (detail.includes("quota") || detail.includes("billing") || detail.includes("insufficient")) {
+      return {
+        status: 503,
+        code: "OPENAI_QUOTA_ERROR",
+        error: "OpenAI API 帳戶目前沒有可用額度。ChatGPT Plus 不包含 API 額度，請在 OpenAI Platform 的 Billing 加入付款方式或預付額度。"
+      };
+    }
+    return {
+      status: 503,
+      code: "OPENAI_RATE_LIMIT",
+      error: "OpenAI API 暫時達到速率限制，請稍後再試。"
+    };
+  }
+
+  if (status === 404 || detail.includes("model_not_found")) {
+    return {
+      status: 502,
+      code: "OPENAI_MODEL_ERROR",
+      error: "目前設定的 OpenAI 模型無法使用。請把 Vercel 的 OPENAI_MODEL 設為帳戶可用的模型後重新部署。"
+    };
+  }
+
+  if (status === 400) {
+    return {
+      status: 502,
+      code: "OPENAI_BAD_REQUEST",
+      error: "OpenAI 拒絕了模型或輸出格式設定。請查看 Vercel Runtime Logs 中的 request ID 與錯誤內容。"
+    };
+  }
+
+  return {
+    status: 502,
+    code: "AI_UPSTREAM_ERROR",
+    error: "AI 暫時無法完成配方。請查看 Vercel Runtime Logs 取得詳細原因。"
+  };
 }
 
 module.exports = async function handler(req, res) {
@@ -228,13 +288,28 @@ module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
 
+  const apiKey = normalizeText(process.env.OPENAI_API_KEY);
+  const model = normalizeText(process.env.OPENAI_MODEL) || "gpt-5-mini";
+
   if (req.method === "OPTIONS") return res.status(204).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "只接受 POST 請求。" });
+
+  if (req.method === "GET") {
+    return res.status(200).json({
+      service: "Little Alchemist AI",
+      status: apiKey ? "configured" : "missing_api_key",
+      configured: Boolean(apiKey),
+      model,
+      message: apiKey
+        ? "AI 伺服器已讀取 OPENAI_API_KEY。請回到首頁輸入未收錄的安全成品測試。"
+        : "Vercel 尚未讀取 OPENAI_API_KEY。請新增 Production 環境變數並重新部署。"
+    });
+  }
+
+  if (req.method !== "POST") return res.status(405).json({ error: "只接受 GET、POST 或 OPTIONS 請求。" });
 
   const ip = getClientIp(req);
-  if (!rateLimit(ip)) return res.status(429).json({ error: "AI 使用次數過於頻繁，請稍後再試。" });
+  if (!rateLimit(ip)) return res.status(429).json({ error: "AI 使用次數過於頻繁，請稍後再試。", code: "LOCAL_RATE_LIMIT" });
 
-  const apiKey = normalizeText(process.env.OPENAI_API_KEY);
   if (!apiKey) {
     return res.status(503).json({
       error: "AI 尚未啟用：伺服器缺少 OPENAI_API_KEY 環境變數。",
@@ -267,7 +342,6 @@ module.exports = async function handler(req, res) {
       return res.status(422).json({ error: "這個項目未通過安全檢查，因此不提供製作配方。", code: "UNSAFE_REQUEST" });
     }
 
-    const model = normalizeText(process.env.OPENAI_MODEL) || "gpt-5-mini";
     const response = await callOpenAI(
       OPENAI_RESPONSES_URL,
       {
@@ -309,12 +383,21 @@ module.exports = async function handler(req, res) {
     if (error?.name === "AbortError") {
       return res.status(504).json({ error: "AI 回應逾時，請稍後再試。", code: "AI_TIMEOUT" });
     }
+
+    const mapped = mapOpenAIError(error);
     console.error("Little Alchemist AI error", {
       message: error?.message,
       status: error?.status,
+      code: error?.openaiCode,
+      type: error?.openaiType,
       requestId: error?.requestId
     });
-    return res.status(502).json({ error: "AI 暫時無法完成配方，請稍後再試。", code: "AI_UPSTREAM_ERROR" });
+
+    return res.status(mapped.status).json({
+      error: mapped.error,
+      code: mapped.code,
+      requestId: error?.requestId || undefined
+    });
   } finally {
     clearTimeout(timeout);
   }
