@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">小小煉金術士圖示</title>
+  <desc id="desc">深紫色背景上的金色煉金瓶</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#26183e"/>
+      <stop offset="1" stop-color="#0d0918"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe4a3"/>
+      <stop offset="1" stop-color="#e8ae4f"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="390" cy="118" r="16" fill="#b99cff" opacity=".8"/>
+  <circle cx="105" cy="154" r="9" fill="#f2c369" opacity=".8"/>
+  <path d="M207 92h98v34h-17v91l88 135c18 28-2 68-36 68H172c-34 0-54-40-36-68l88-135v-91h-17V92Z" fill="none" stroke="url(#gold)" stroke-width="24" stroke-linejoin="round"/>
+  <path d="M167 347c54-45 112 43 183-8l27 43c8 13-1 30-17 30H153c-16 0-25-17-17-30l31-48Z" fill="#b99cff" opacity=".8"/>
+  <circle cx="245" cy="303" r="15" fill="#ffe4a3"/>
+  <circle cx="293" cy="333" r="10" fill="#ffe4a3"/>
+</svg>
