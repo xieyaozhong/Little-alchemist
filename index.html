@@ -4,16 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#161126" />
-  <meta name="description" content="小小煉金術士：輸入想做的成品，取得材料、配方、製作方式、科學原理與安全提醒。" />
+  <meta name="description" content="小小煉金術士：輸入想做的成品，取得材料、配方、簡單圖解、製作方式、科學原理與安全提醒。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_TW" />
   <meta property="og:title" content="小小煉金術士 Little Alchemist" />
-  <meta property="og:description" content="輸入成品，拆解材料、配方、步驟與原理。" />
+  <meta property="og:description" content="輸入成品，由圖鑑或 AI 拆解材料、配方、圖解、步驟與原理。" />
   <title>小小煉金術士 Little Alchemist</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="enhancements.css" />
   <script src="recipes.js" defer></script>
+  <script src="diagrams.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -40,12 +42,13 @@
     <section class="hero" id="top">
       <div class="eyebrow">把「想做什麼」變成「下一步做什麼」</div>
       <h1>輸入成品，<br /><span>拆解它的配方。</span></h1>
-      <p class="hero-copy">搜尋生活科學作品與手作成品，取得材料、工具、比例、步驟、原理、安全提醒與失敗排查。</p>
+      <p class="hero-copy">先搜尋人工整理圖鑑；未收錄的安全成品，會交由 AI 產生材料、三格圖解、製作步驟、原理解說與安全提醒。</p>
+      <div class="ai-ready-badge">內建圖鑑＋AI 配方助手</div>
 
       <form id="searchForm" class="search-shell" autocomplete="off">
         <label class="sr-only" for="searchInput">輸入想製作的成品</label>
         <span class="search-icon" aria-hidden="true">⌕</span>
-        <input id="searchInput" type="search" placeholder="例如：彈力球、氣球火箭、檸檬電池…" maxlength="50" enterkeyhint="search" />
+        <input id="searchInput" type="search" placeholder="例如：彈力球、氣球火箭、紙橋模型…" maxlength="60" enterkeyhint="search" />
         <button type="submit">開始煉成</button>
         <div id="suggestions" class="suggestions" role="listbox" hidden></div>
       </form>
@@ -61,9 +64,9 @@
 
     <section class="feature-strip" aria-label="功能特色">
       <article><b>01</b><span><strong>材料拆解</strong><small>數量與替代品</small></span></article>
-      <article><b>02</b><span><strong>步驟配方</strong><small>照順序完成</small></span></article>
+      <article><b>02</b><span><strong>三格圖解</strong><small>快速看懂流程</small></span></article>
       <article><b>03</b><span><strong>原理解說</strong><small>知道為什麼</small></span></article>
-      <article><b>04</b><span><strong>安全檢查</strong><small>先避開風險</small></span></article>
+      <article><b>04</b><span><strong>AI 安全檢查</strong><small>先避開高風險</small></span></article>
     </section>
 
     <section id="resultSection" class="result-section" aria-live="polite">
@@ -81,15 +84,15 @@
           <span class="eyebrow">Starter Grimoire</span>
           <h2>入門煉成圖鑑</h2>
         </div>
-        <p>第一版採用人工審核的安全配方，避免直接產生未驗證或高風險做法。</p>
+        <p>人工整理配方會優先顯示；AI 產生的內容會清楚標示為草稿，並只保留在目前瀏覽工作階段。</p>
       </div>
       <div id="recipeGrid" class="recipe-grid"></div>
     </section>
   </main>
 
   <footer>
-    <p>Little Alchemist · 讓製作、理解與安全在同一張配方裡。</p>
-    <p class="footer-note">所有實驗應由成人評估環境與材料；本網站不能取代專業安全指導。</p>
+    <p>Little Alchemist · 讓製作、理解、圖解與安全在同一張配方裡。</p>
+    <p class="footer-note">所有實驗應由成人評估環境與材料；AI 內容不能取代專業安全指導。</p>
   </footer>
 
   <template id="recipeCardTemplate">
