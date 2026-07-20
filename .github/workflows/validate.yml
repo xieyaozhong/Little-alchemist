@@ -27,6 +27,9 @@ jobs:
           for file in chemistry-elements-*.js; do node --check "$file"; done
           node --check chemistry-reactions.js
           node --check advanced-alchemy.js
+          node --check pharmacy-data.js
+          for file in pharmacy-modules-*.js; do node --check "$file"; done
+          node --check pharmacy-alchemy.js
           node --check service-worker.js
           node --check api/generate.js
 
@@ -103,6 +106,45 @@ jobs:
           console.log('Validated 118 elements and 30 chemistry equations.');
           NODE
 
+      - name: Validate pharmacy library
+        run: |
+          node <<'NODE'
+          global.window = {};
+          require('./pharmacy-data.js');
+          for (let index = 1; index <= 4; index += 1) {
+            require(`./pharmacy-modules-${String(index).padStart(2, '0')}.js`);
+          }
+
+          const pharmacy = window.LITTLE_ALCHEMIST_PHARMACY;
+          if (!pharmacy) throw new Error('Pharmacy library is missing');
+          if (Object.keys(pharmacy.categories).length !== 8) throw new Error('Expected 8 pharmacy categories');
+          if (pharmacy.paths.length !== 6) throw new Error(`Expected 6 learning paths, received ${pharmacy.paths.length}`);
+          if (pharmacy.modules.length !== 48) throw new Error(`Expected 48 pharmacy modules, received ${pharmacy.modules.length}`);
+
+          const ids = new Set();
+          const titles = new Set();
+          for (const module of pharmacy.modules) {
+            if (!module.id || !module.title || !module.summary) throw new Error('Incomplete pharmacy module');
+            if (ids.has(module.id)) throw new Error(`Duplicate pharmacy id: ${module.id}`);
+            if (titles.has(module.title)) throw new Error(`Duplicate pharmacy title: ${module.title}`);
+            if (!pharmacy.categories[module.category]) throw new Error(`Unknown pharmacy category: ${module.category}`);
+            if (!Array.isArray(module.concepts) || module.concepts.length < 3) throw new Error(`${module.id} needs at least three concepts`);
+            if (!module.safety) throw new Error(`${module.id} needs a safety boundary`);
+            ids.add(module.id);
+            titles.add(module.title);
+          }
+
+          for (const path of pharmacy.paths) {
+            if (!path.id || !path.title || !Array.isArray(path.modules) || path.modules.length < 4) {
+              throw new Error('Incomplete pharmacy learning path');
+            }
+            for (const moduleId of path.modules) {
+              if (!ids.has(moduleId)) throw new Error(`Learning path references missing module: ${moduleId}`);
+            }
+          }
+          console.log('Validated 48 pharmacy modules across 8 categories and 6 learning paths.');
+          NODE
+
       - name: Check JSON files
         run: |
           python -m json.tool manifest.webmanifest > /dev/null
@@ -118,8 +160,15 @@ jobs:
           test -f chemistry-data.js
           test "$(find . -maxdepth 1 -name 'chemistry-elements-*.js' | wc -l)" -eq 4
           test -f chemistry-reactions.js
+          test -f pharmacy-data.js
+          test "$(find . -maxdepth 1 -name 'pharmacy-modules-*.js' | wc -l)" -eq 4
+          test -f pharmacy-alchemy.css
+          test -f pharmacy-alchemy.js
           test -f api/generate.js
           grep -q 'id="recipeTab"' index.html
           grep -q 'id="advancedTab"' index.html
+          grep -q 'id="pharmacyTab"' index.html
           grep -q 'id="periodicTable"' index.html
           grep -q 'id="reactionGrid"' index.html
+          grep -q 'id="pharmacyGrid"' index.html
+          grep -q 'id="pharmacyDetail"' index.html
