@@ -1,11 +1,12 @@
 "use strict";
 
-const CACHE_NAME = "little-alchemist-v2";
+const CACHE_NAME = "little-alchemist-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./enhancements.css",
+  "./config.js",
   "./recipes.js",
   "./diagrams.js",
   "./app.js",
