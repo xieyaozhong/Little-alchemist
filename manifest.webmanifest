@@ -1,7 +1,7 @@
 {
   "name": "小小煉金術士 Little Alchemist",
   "short_name": "小小煉金術士",
-  "description": "輸入成品，取得材料、配方、製作方式、科學原理與安全提醒。",
+  "description": "探索製作配方、元素週期表、化學反應式與藥學核心知識。",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",
