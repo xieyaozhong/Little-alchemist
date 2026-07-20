@@ -1,0 +1,19 @@
+{
+  "name": "小小煉金術士 Little Alchemist",
+  "short_name": "小小煉金術士",
+  "description": "輸入成品，取得材料、配方、製作方式、科學原理與安全提醒。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d0918",
+  "theme_color": "#161126",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
