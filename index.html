@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#161126" />
-  <meta name="description" content="小小煉金術士：107 種製作配方、AI 助手、118 種元素、常用反應式與 48 個藥學核心主題。" />
+  <meta name="description" content="小小煉金術士：107 種製作配方、118 種元素、48 個藥學主題與 72 種礦物晶體知識庫。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_TW" />
   <meta property="og:title" content="小小煉金術士 Little Alchemist" />
-  <meta property="og:description" content="從生活配方進入元素、化學反應與藥學知識地圖。" />
+  <meta property="og:description" content="從生活配方進入元素、化學反應、藥學與礦物晶體結構。" />
   <title>小小煉金術士 Little Alchemist</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="enhancements.css" />
   <link rel="stylesheet" href="advanced-alchemy.css" />
   <link rel="stylesheet" href="pharmacy-alchemy.css" />
+  <link rel="stylesheet" href="gem-alchemy.css" />
   <script src="config.js" defer></script>
   <script src="recipes.js" defer></script>
   <script src="recipe-factory.js" defer></script>
@@ -44,9 +45,15 @@
   <script src="pharmacy-modules-02.js" defer></script>
   <script src="pharmacy-modules-03.js" defer></script>
   <script src="pharmacy-modules-04.js" defer></script>
+  <script src="gem-data.js" defer></script>
+  <script src="gem-minerals-01.js" defer></script>
+  <script src="gem-minerals-02.js" defer></script>
+  <script src="gem-minerals-03.js" defer></script>
+  <script src="gem-minerals-04.js" defer></script>
   <script src="app.js" defer></script>
   <script src="advanced-alchemy.js" defer></script>
   <script src="pharmacy-alchemy.js" defer></script>
+  <script src="gem-alchemy.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">跳到主要內容</a>
@@ -64,6 +71,7 @@
       <button id="recipeTab" class="main-tab" type="button" role="tab" aria-selected="true" aria-controls="recipeView">配方圖鑑</button>
       <button id="advancedTab" class="main-tab" type="button" role="tab" aria-selected="false" aria-controls="advancedView" tabindex="-1">進階煉金術</button>
       <button id="pharmacyTab" class="main-tab" type="button" role="tab" aria-selected="false" aria-controls="pharmacyView" tabindex="-1">高級煉金術</button>
+      <button id="gemTab" class="main-tab" type="button" role="tab" aria-selected="false" aria-controls="gemView" tabindex="-1">寶石煉成術</button>
     </div>
 
     <nav id="recipeActions" class="header-actions" aria-label="配方圖鑑操作">
@@ -106,9 +114,7 @@
 
       <section id="resultSection" class="result-section" aria-live="polite">
         <div id="emptyState" class="empty-state">
-          <div class="empty-symbol">✦</div>
-          <h2>煉金桌已準備完成</h2>
-          <p>從 107 種人工配方中搜尋，或輸入新的安全成品交給 AI 分析。</p>
+          <div class="empty-symbol">✦</div><h2>煉金桌已準備完成</h2><p>從 107 種人工配方中搜尋，或輸入新的安全成品交給 AI 分析。</p>
         </div>
         <div id="resultContainer"></div>
       </section>
@@ -127,10 +133,7 @@
         <div class="eyebrow">Advanced Alchemy</div>
         <h1>進階煉金術：<br /><span>元素與反應的地圖。</span></h1>
         <p>從原子序、週期與族開始認識 118 種化學元素，再用國中常見反應式理解燃燒、分解、中和、置換、沉澱與生物化學。所有危險反應只提供原理與課堂辨識，不作居家操作指南。</p>
-        <div class="advanced-jumps">
-          <button type="button" data-advanced-jump="#periodicSection">查看完整元素週期表</button>
-          <button type="button" data-advanced-jump="#reactionSection">查看常用反應式</button>
-        </div>
+        <div class="advanced-jumps"><button type="button" data-advanced-jump="#periodicSection">查看完整元素週期表</button><button type="button" data-advanced-jump="#reactionSection">查看常用反應式</button></div>
       </div>
 
       <section id="periodicSection" class="advanced-section">
@@ -154,15 +157,9 @@
           <div><span class="eyebrow">Junior Chemistry Equations</span><h2>國中常用化學反應式</h2></div>
           <div><p>每張卡片附平衡反應式、反應條件、可觀察現象與核心概念，協助理解係數、質量守恆與反應分類。</p><div id="reactionCount" class="advanced-stat">顯示 30／30 條反應式</div></div>
         </div>
-        <div class="equation-guide" aria-label="化學反應式符號說明">
-          <article><b>→</b><span>反應物生成產物</span></article>
-          <article><b>係數</b><span>代表粒子數或莫耳數比例</span></article>
-          <article><b>↑</b><span>有氣體生成並逸出</span></article>
-          <article><b>↓</b><span>有難溶沉澱生成</span></article>
-        </div>
+        <div class="equation-guide" aria-label="化學反應式符號說明"><article><b>→</b><span>反應物生成產物</span></article><article><b>係數</b><span>代表粒子數或莫耳數比例</span></article><article><b>↑</b><span>有氣體生成並逸出</span></article><article><b>↓</b><span>有難溶沉澱生成</span></article></div>
         <label class="advanced-search" for="reactionSearch"><span aria-hidden="true">⌕</span><input id="reactionSearch" type="search" placeholder="搜尋：燃燒、中和、CO2、沉澱、鐵…" /></label>
-        <div id="reactionFilters" class="advanced-filters" aria-label="反應類型篩選"></div>
-        <div id="reactionGrid" class="reaction-grid"></div>
+        <div id="reactionFilters" class="advanced-filters" aria-label="反應類型篩選"></div><div id="reactionGrid" class="reaction-grid"></div>
         <p class="periodic-note">安全提醒：標示「教師示範」或涉及強酸、強鹼、刺激性氣體、氧化劑、活潑金屬的反應，不應在家中自行操作。</p>
       </section>
     </section>
@@ -173,37 +170,53 @@
         <h1>高級煉金術：<br /><span>藥物從分子到病人的路徑。</span></h1>
         <p>以大學藥學核心架構整理藥學基礎、藥劑學、藥物動力學、藥效學、藥物化學、治療藥理、毒理安全、分析品質與法規。內容用於學習與建立知識地圖，不提供個人處方或劑量建議。</p>
         <div class="pharmacy-boundary">教育用途・不替代醫師或藥師的個別評估</div>
-        <div class="pharmacy-jumps">
-          <button type="button" data-pharmacy-jump="#pharmacyPathsSection">依學習路線開始</button>
-          <button type="button" data-pharmacy-jump="#pharmacyLibrarySection">搜尋 48 個核心主題</button>
-        </div>
+        <div class="pharmacy-jumps"><button type="button" data-pharmacy-jump="#pharmacyPathsSection">依學習路線開始</button><button type="button" data-pharmacy-jump="#pharmacyLibrarySection">搜尋 48 個核心主題</button></div>
       </div>
 
       <section id="pharmacyPathsSection" class="pharmacy-section">
-        <div class="pharmacy-section-heading">
-          <div><span class="eyebrow">6 Learning Paths</span><h2>藥學知識學習路線</h2></div>
-          <p>可按順序從入門、製劑、PK／PD、藥物化學、臨床安全一路走到產業與法規，也可以直接點選需要的主題。</p>
-        </div>
+        <div class="pharmacy-section-heading"><div><span class="eyebrow">6 Learning Paths</span><h2>藥學知識學習路線</h2></div><p>可按順序從入門、製劑、PK／PD、藥物化學、臨床安全一路走到產業與法規，也可以直接點選需要的主題。</p></div>
         <div id="pharmacyPaths" class="pharmacy-path-grid"></div>
       </section>
 
       <section id="pharmacyLibrarySection" class="pharmacy-section">
-        <div class="pharmacy-section-heading">
-          <div><span class="eyebrow">48 Pharmacy Modules</span><h2>藥學核心知識庫</h2></div>
-          <div><p>搜尋概念、英文名、藥物家族、分析方法或法規主題，並用八大領域篩選。</p><div id="pharmacyCount" class="pharmacy-stat">顯示 48／48 個主題</div></div>
-        </div>
+        <div class="pharmacy-section-heading"><div><span class="eyebrow">48 Pharmacy Modules</span><h2>藥學核心知識庫</h2></div><div><p>搜尋概念、英文名、藥物家族、分析方法或法規主題，並用八大領域篩選。</p><div id="pharmacyCount" class="pharmacy-stat">顯示 48／48 個主題</div></div></div>
         <label class="pharmacy-search" for="pharmacySearch"><span aria-hidden="true">⌕</span><input id="pharmacySearch" type="search" placeholder="搜尋：半衰期、錠劑、受體、HPLC、抗生素、GMP…" /></label>
-        <div id="pharmacyFilters" class="pharmacy-filters" aria-label="藥學領域篩選"></div>
-        <div id="pharmacyDetail" class="pharmacy-detail" aria-live="polite"></div>
-        <div id="pharmacyGrid" class="pharmacy-grid"></div>
+        <div id="pharmacyFilters" class="pharmacy-filters" aria-label="藥學領域篩選"></div><div id="pharmacyDetail" class="pharmacy-detail" aria-live="polite"></div><div id="pharmacyGrid" class="pharmacy-grid"></div>
         <p class="periodic-note">醫療安全提醒：知識卡只解釋學理與風險框架，不提供個人診斷、處方選擇、劑量調整、停藥建議或藥物合成步驟。</p>
+      </section>
+    </section>
+
+    <section id="gemView" class="gem-view tab-panel" role="tabpanel" aria-labelledby="gemTab" hidden>
+      <div class="gem-hero">
+        <div class="eyebrow">Gemstone &amp; Crystal Alchemy</div>
+        <h1>寶石煉成術：<br /><span>從原子排列讀懂地球。</span></h1>
+        <p>以礦物學與晶體化學整理 72 種代表性礦物：查看化學式、晶系、結構單元、硬度、解理、光澤、地質成因、典型產狀、共生礦物、寶石變種與安全注意事項。</p>
+        <div class="gem-boundary">結構圖為概念示意・礦物鑑定仍需實驗與專業儀器</div>
+        <div class="gem-jumps"><button type="button" data-gem-jump="#gemPathsSection">依晶體路線開始</button><button type="button" data-gem-jump="#gemLibrarySection">搜尋 72 種礦物</button></div>
+      </div>
+
+      <section id="gemPathsSection" class="gem-section">
+        <div class="gem-section-heading"><div><span class="eyebrow">6 Crystal Paths</span><h2>礦物與晶體學習路線</h2></div><p>從七大晶系與配位多面體開始，再進入矽酸鹽結構、寶石致色、地質成因、礦床與肉眼鑑定。</p></div>
+        <div id="gemPaths" class="gem-path-grid"></div>
+      </section>
+
+      <section id="gemLibrarySection" class="gem-section">
+        <div class="gem-section-heading"><div><span class="eyebrow">72 Mineral Files</span><h2>礦物晶體與寶石資料庫</h2></div><div><p>可依名稱、化學式、晶系、礦物類別、形成環境、硬度或寶石變種搜尋。</p><div id="gemCount" class="gem-stat">顯示 72／72 種礦物</div></div></div>
+        <div class="gem-toolbar">
+          <label class="gem-search" for="gemSearch"><span aria-hidden="true">⌕</span><input id="gemSearch" type="search" placeholder="搜尋：石英、Al2O3、三方晶系、熱液、翡翠、硬度 7…" /></label>
+          <label class="gem-system-select"><span class="sr-only">依晶系篩選</span><select id="gemSystemFilter"><option value="all">全部晶系與集合體</option><option>等軸晶系</option><option>四方晶系</option><option>六方晶系</option><option>三方晶系</option><option>斜方晶系</option><option>單斜晶系</option><option>三斜晶系</option><option>非晶質</option><option>混合／集合體</option><option>單斜／斜方晶系</option></select></label>
+        </div>
+        <div id="gemFilters" class="gem-filters" aria-label="礦物類別篩選"></div>
+        <div id="gemDetail" class="gem-detail" aria-live="polite"></div>
+        <div id="gemGrid" class="gem-grid"></div>
+        <p class="periodic-note">採集安全：含鉛、汞、砷、銻、鎘或石棉型纖維的標本不可磨粉、加熱、酸洗或讓兒童接觸；未知礦物也不應舔舐或以味覺鑑定。</p>
       </section>
     </section>
   </main>
 
   <footer>
-    <p>Little Alchemist · 從製作配方走向元素、反應、藥物與科學理解。</p>
-    <p class="footer-note">所有實驗與藥物相關決策應由成人、教師或合格醫療專業人員評估；AI 與知識庫內容不能取代專業指導。</p>
+    <p>Little Alchemist · 從製作配方走向元素、反應、藥物、晶體與地球科學。</p>
+    <p class="footer-note">所有實驗、藥物決策與礦物處理應由成人、教師或合格專業人員評估；AI 與知識庫不能取代專業指導。</p>
   </footer>
 
   <template id="recipeCardTemplate">
@@ -214,6 +227,6 @@
     </article>
   </template>
 
-  <noscript><p class="noscript">這個網站需要啟用 JavaScript 才能搜尋與顯示配方、元素、反應式及藥學知識。</p></noscript>
+  <noscript><p class="noscript">這個網站需要啟用 JavaScript 才能搜尋與顯示配方、元素、反應式、藥學及礦物晶體知識。</p></noscript>
 </body>
 </html>
