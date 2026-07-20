@@ -1,6 +1,47 @@
 "use strict";
 
 (() => {
-  const symbols = "H|He|Li|Be|B|C|N|O|F|Ne|Na|Mg|Al|Si|P|S|Cl|Ar|K|Ca|Sc|Ti|V|Cr|Mn|Fe|Co|Ni|Cu|Zn|Ga|Ge|As|Se|Br|Kr|Rb|Sr|Y|Zr|Nb|Mo|Tc|Ru|Rh|Pd|Ag|Cd|In|Sn|Sb|Te|I|Xe|Cs|Ba|La|Ce|Pr|Nd|Pm|Sm|Eu|Gd|Tb|Dy|Ho|Er|Tm|Yb|Lu|Hf|Ta|W|Re|Os|Ir|Pt|Au|Hg|Tl|Pb|Bi|Po|At|Rn|Fr|Ra|Ac|Th|Pa|U|Np|Pu|Am|Cm|Bk|Cf|Es|Fm|Md|No|Lr|Rf|Db|Sg|Bh|Hs|Mt|Ds|Rg|Cn|Nh|Fl|Mc|Lv|Ts|Og".split("|");
-  const names = "氫|氦|鋰|鈹|硼|碳|氮|氧|氟|氖|鈉|鎂|鋁|矽|磷|硫|氯|氬|鉀|鈣|鈧|鈦|釩|鉻|錳|鐵|鈷|鎳|銅|鋅|鎵|鍺|砷|硒|溴|氪|銣|鍶|釔|鋯|鈮|鉬|鎝|釕|銠|鈀|銀|鎘|銦|錫|銻|碲|碘|氙|銫|鋇|鑭|鈰|鐠|釹|鉕|釤|銪|釓|鋱|鏑|鈥|鉺|銩|鐿|鎦|鉿|鉭|鎢|錸|鋨|銥|鉑|金|汞|鉈|鉛|鉍|釙|砈|氡|鍅|鐳|錒|釷|鏷|鈾|錼|鈽|鋂|鋦|鉳|鉲|鑀|鐨|鍆|鍩|鐒|鑪|𨧀|𨭎|𨨏|𨭆|䥑|鐽|錀|鎶|鉨|鈇|鏌|鉝|鿬|鿫".split("|");
-  const english = "Hydrogen|Helium|Lithium|Beryllium|Boron|Carbon|Nitrogen|Oxygen|Fluorine|Neon|Sodium|Magnesium|Aluminium|Silicon|Phosphorus|Sulfur|Chlorine|Argon|Potassium|Calcium|Scandium|Titanium|Vanadium|Chromium|Manganese|Iron|Cobalt|Nickel|Copper|Zinc|Gallium|Germanium|Arsenic|Selenium|Bromine|Krypton|Rubidium|Strontium|Yttrium|Zirconium|Niobium|Molybdenum|Technetium|Ruthenium|Rhodium|Palladium|Silver|Cadmium|Indium|Tin|Antimony|Tellurium|Iodine|Xenon|Caesium|Barium|Lanthanum|Cerium|Praseodymium|Neodymium|Promethium|Samarium|Europium|Gadolinium|Terbium|Dysprosium|Holmium|Erbium|Thulium|Ytterbium|Lutetium|Hafnium|Tantalum|Tungsten|Rhenium|Osmium|Iridium|Platinum|Gold|Mercury|Thallium|Lead|Bismuth|Polonium|Astatine|Radon|Francium|Radium|Actinium|Thorium|Protactinium|Uranium|Neptunium|Plutonium|Americium|Curium|Berkelium|Californium|Einsteinium|Fermium|Mendelevium|Nobelium|Lawrencium|Rutherfordium|Dubnium|Seaborgium|Bohrium|Hassium|Meitnerium|Darm
+  const categoryLabels = {
+    "nonmetal": "非金屬",
+    "noble-gas": "惰性氣體",
+    "alkali-metal": "鹼金屬",
+    "alkaline-earth": "鹼土金屬",
+    "metalloid": "類金屬",
+    "halogen": "鹵素",
+    "transition": "過渡金屬",
+    "post-transition": "後過渡金屬",
+    "lanthanide": "鑭系元素",
+    "actinide": "錒系元素",
+    "unknown": "性質待確認"
+  };
+
+  const chemistry = {
+    categoryLabels,
+    elements: [],
+    reactions: [],
+    addElements(records) {
+      records.forEach(record => {
+        const [number, symbol, name, mass, period, group, category, phase, use] = record;
+        const categoryLabel = categoryLabels[category] || category;
+        this.elements.push({
+          number,
+          symbol,
+          name,
+          english: symbol,
+          mass,
+          period,
+          group,
+          category,
+          categoryLabel,
+          phase,
+          intro: use || `${name}（${symbol}）屬於${categoryLabel}，原子序為 ${number}。學習重點包括電子組態、常見氧化態、化合物性質，以及它在材料、分析或地球科學中的角色。`
+        });
+      });
+    },
+    addReactions(records) {
+      this.reactions.push(...records);
+    }
+  };
+
+  window.LITTLE_ALCHEMIST_CHEMISTRY = chemistry;
+})();
