@@ -30,6 +30,9 @@ jobs:
           node --check pharmacy-data.js
           for file in pharmacy-modules-*.js; do node --check "$file"; done
           node --check pharmacy-alchemy.js
+          node --check gem-data.js
+          for file in gem-minerals-*.js; do node --check "$file"; done
+          node --check gem-alchemy.js
           node --check service-worker.js
           node --check api/generate.js
 
@@ -62,7 +65,6 @@ jobs:
             const diagram = recipe.diagram || window.LITTLE_ALCHEMIST_DIAGRAMS?.[recipe.id];
             if (!Array.isArray(diagram) || diagram.length !== 3) throw new Error(`${recipe.id} needs three diagram stages`);
           }
-
           const slime = recipes.find(recipe => recipe.id === 'classic-slime');
           if (!slime || !slime.aliases.includes('史萊姆')) throw new Error('Classic slime recipe is missing');
           console.log(`Validated ${recipes.length} unique recipes.`);
@@ -79,13 +81,8 @@ jobs:
           require('./chemistry-reactions.js');
 
           const chemistry = window.LITTLE_ALCHEMIST_CHEMISTRY;
-          if (!chemistry || chemistry.elements.length !== 118) {
-            throw new Error(`Expected 118 elements, received ${chemistry?.elements?.length}`);
-          }
-          if (chemistry.reactions.length !== 30) {
-            throw new Error(`Expected 30 reactions, received ${chemistry.reactions.length}`);
-          }
-
+          if (!chemistry || chemistry.elements.length !== 118) throw new Error(`Expected 118 elements, received ${chemistry?.elements?.length}`);
+          if (chemistry.reactions.length !== 30) throw new Error(`Expected 30 reactions, received ${chemistry.reactions.length}`);
           const numbers = new Set();
           const symbols = new Set();
           for (const element of chemistry.elements) {
@@ -98,7 +95,6 @@ jobs:
             numbers.add(element.number);
             symbols.add(element.symbol);
           }
-
           for (const reaction of chemistry.reactions) {
             if (!reaction.title || !reaction.equation.includes('→')) throw new Error('Incomplete reaction equation');
             if (!reaction.category || !reaction.observation || !reaction.concept) throw new Error(`Incomplete reaction: ${reaction.title}`);
@@ -114,13 +110,11 @@ jobs:
           for (let index = 1; index <= 4; index += 1) {
             require(`./pharmacy-modules-${String(index).padStart(2, '0')}.js`);
           }
-
           const pharmacy = window.LITTLE_ALCHEMIST_PHARMACY;
           if (!pharmacy) throw new Error('Pharmacy library is missing');
           if (Object.keys(pharmacy.categories).length !== 8) throw new Error('Expected 8 pharmacy categories');
           if (pharmacy.paths.length !== 6) throw new Error(`Expected 6 learning paths, received ${pharmacy.paths.length}`);
           if (pharmacy.modules.length !== 48) throw new Error(`Expected 48 pharmacy modules, received ${pharmacy.modules.length}`);
-
           const ids = new Set();
           const titles = new Set();
           for (const module of pharmacy.modules) {
@@ -133,16 +127,47 @@ jobs:
             ids.add(module.id);
             titles.add(module.title);
           }
-
           for (const path of pharmacy.paths) {
-            if (!path.id || !path.title || !Array.isArray(path.modules) || path.modules.length < 4) {
-              throw new Error('Incomplete pharmacy learning path');
-            }
-            for (const moduleId of path.modules) {
-              if (!ids.has(moduleId)) throw new Error(`Learning path references missing module: ${moduleId}`);
-            }
+            if (!path.id || !path.title || !Array.isArray(path.modules) || path.modules.length < 4) throw new Error('Incomplete pharmacy learning path');
+            for (const moduleId of path.modules) if (!ids.has(moduleId)) throw new Error(`Learning path references missing module: ${moduleId}`);
           }
           console.log('Validated 48 pharmacy modules across 8 categories and 6 learning paths.');
+          NODE
+
+      - name: Validate gemstone mineral library
+        run: |
+          node <<'NODE'
+          global.window = {};
+          require('./gem-data.js');
+          for (let index = 1; index <= 4; index += 1) {
+            require(`./gem-minerals-${String(index).padStart(2, '0')}.js`);
+          }
+
+          const gems = window.LITTLE_ALCHEMIST_GEMS;
+          if (!gems) throw new Error('Gemstone library is missing');
+          if (Object.keys(gems.categories).length !== 12) throw new Error(`Expected 12 mineral categories, received ${Object.keys(gems.categories).length}`);
+          if (gems.paths.length !== 6) throw new Error(`Expected 6 crystal paths, received ${gems.paths.length}`);
+          if (gems.minerals.length !== 72) throw new Error(`Expected 72 minerals, received ${gems.minerals.length}`);
+
+          const ids = new Set();
+          const titles = new Set();
+          for (const mineral of gems.minerals) {
+            if (!mineral.id || !mineral.title || !mineral.english || !mineral.formula) throw new Error('Incomplete mineral identity');
+            if (ids.has(mineral.id)) throw new Error(`Duplicate mineral id: ${mineral.id}`);
+            if (titles.has(mineral.title)) throw new Error(`Duplicate mineral title: ${mineral.title}`);
+            if (!gems.categories[mineral.category]) throw new Error(`Unknown mineral category: ${mineral.category}`);
+            for (const field of ['crystalSystem','structureKey','structure','hardness','density','cleavage','luster','color','streak','genesis','environment','identification','safety']) {
+              if (!mineral[field]) throw new Error(`${mineral.id} is missing ${field}`);
+            }
+            if (!Array.isArray(mineral.associations)) throw new Error(`${mineral.id} needs associations`);
+            ids.add(mineral.id);
+            titles.add(mineral.title);
+          }
+          for (const path of gems.paths) {
+            if (!path.id || !path.title || !Array.isArray(path.minerals) || path.minerals.length < 4) throw new Error('Incomplete crystal learning path');
+            for (const mineralId of path.minerals) if (!ids.has(mineralId)) throw new Error(`Crystal path references missing mineral: ${mineralId}`);
+          }
+          console.log('Validated 72 minerals across 12 classes and 6 crystal paths.');
           NODE
 
       - name: Check JSON files
@@ -164,11 +189,17 @@ jobs:
           test "$(find . -maxdepth 1 -name 'pharmacy-modules-*.js' | wc -l)" -eq 4
           test -f pharmacy-alchemy.css
           test -f pharmacy-alchemy.js
+          test -f gem-data.js
+          test "$(find . -maxdepth 1 -name 'gem-minerals-*.js' | wc -l)" -eq 4
+          test -f gem-alchemy.css
+          test -f gem-alchemy.js
           test -f api/generate.js
           grep -q 'id="recipeTab"' index.html
           grep -q 'id="advancedTab"' index.html
           grep -q 'id="pharmacyTab"' index.html
+          grep -q 'id="gemTab"' index.html
           grep -q 'id="periodicTable"' index.html
           grep -q 'id="reactionGrid"' index.html
           grep -q 'id="pharmacyGrid"' index.html
-          grep -q 'id="pharmacyDetail"' index.html
+          grep -q 'id="gemGrid"' index.html
+          grep -q 'id="gemDetail"' index.html
