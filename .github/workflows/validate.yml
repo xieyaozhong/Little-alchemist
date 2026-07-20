@@ -1,0 +1,36 @@
+name: Validate Little Alchemist
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check recipes.js
+          node --check diagrams.js
+          node --check service-worker.js
+          node --check api/generate.js
+
+      - name: Check JSON files
+        run: |
+          python -m json.tool manifest.webmanifest > /dev/null
+          python -m json.tool vercel.json > /dev/null
+
+      - name: Verify required files
+        run: |
+          test -f index.html
+          test -f styles.css
+          test -f enhancements.css
+          test -f api/generate.js
