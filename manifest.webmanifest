@@ -1,7 +1,7 @@
 {
   "name": "小小煉金術士 Little Alchemist",
   "short_name": "小小煉金術士",
-  "description": "探索製作配方、元素週期表、化學反應式與藥學核心知識。",
+  "description": "探索製作配方、元素、化學反應、藥學與礦物晶體結構。",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",
