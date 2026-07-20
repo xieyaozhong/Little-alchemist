@@ -23,6 +23,10 @@ jobs:
           node --check recipe-factory.js
           for file in recipes-common-*.js; do node --check "$file"; done
           node --check diagrams.js
+          node --check chemistry-data.js
+          for file in chemistry-elements-*.js; do node --check "$file"; done
+          node --check chemistry-reactions.js
+          node --check advanced-alchemy.js
           node --check service-worker.js
           node --check api/generate.js
 
@@ -49,29 +53,54 @@ jobs:
             if (titles.has(recipe.title)) throw new Error(`Duplicate recipe title: ${recipe.title}`);
             ids.add(recipe.id);
             titles.add(recipe.title);
-
-            if (!Array.isArray(recipe.materials) || recipe.materials.length < 2) {
-              throw new Error(`${recipe.id} needs at least two materials`);
-            }
-            if (!Array.isArray(recipe.steps) || recipe.steps.length < 3) {
-              throw new Error(`${recipe.id} needs at least three steps`);
-            }
-            if (!recipe.principle || !Array.isArray(recipe.safety) || recipe.safety.length === 0) {
-              throw new Error(`${recipe.id} is missing principle or safety guidance`);
-            }
-
+            if (!Array.isArray(recipe.materials) || recipe.materials.length < 2) throw new Error(`${recipe.id} needs materials`);
+            if (!Array.isArray(recipe.steps) || recipe.steps.length < 3) throw new Error(`${recipe.id} needs steps`);
+            if (!recipe.principle || !Array.isArray(recipe.safety) || recipe.safety.length === 0) throw new Error(`${recipe.id} lacks guidance`);
             const diagram = recipe.diagram || window.LITTLE_ALCHEMIST_DIAGRAMS?.[recipe.id];
-            if (!Array.isArray(diagram) || diagram.length !== 3) {
-              throw new Error(`${recipe.id} must have exactly three diagram stages`);
-            }
+            if (!Array.isArray(diagram) || diagram.length !== 3) throw new Error(`${recipe.id} needs three diagram stages`);
           }
 
           const slime = recipes.find(recipe => recipe.id === 'classic-slime');
-          if (!slime || !slime.aliases.includes('史萊姆')) {
-            throw new Error('Classic slime recipe or search alias is missing');
+          if (!slime || !slime.aliases.includes('史萊姆')) throw new Error('Classic slime recipe is missing');
+          console.log(`Validated ${recipes.length} unique recipes.`);
+          NODE
+
+      - name: Validate chemistry library
+        run: |
+          node <<'NODE'
+          global.window = {};
+          require('./chemistry-data.js');
+          for (let index = 1; index <= 4; index += 1) {
+            require(`./chemistry-elements-${String(index).padStart(2, '0')}.js`);
+          }
+          require('./chemistry-reactions.js');
+
+          const chemistry = window.LITTLE_ALCHEMIST_CHEMISTRY;
+          if (!chemistry || chemistry.elements.length !== 118) {
+            throw new Error(`Expected 118 elements, received ${chemistry?.elements?.length}`);
+          }
+          if (chemistry.reactions.length !== 30) {
+            throw new Error(`Expected 30 reactions, received ${chemistry.reactions.length}`);
           }
 
-          console.log(`Validated ${recipes.length} unique recipes with three-stage diagrams.`);
+          const numbers = new Set();
+          const symbols = new Set();
+          for (const element of chemistry.elements) {
+            if (numbers.has(element.number)) throw new Error(`Duplicate atomic number: ${element.number}`);
+            if (symbols.has(element.symbol)) throw new Error(`Duplicate symbol: ${element.symbol}`);
+            if (element.number < 1 || element.number > 118) throw new Error(`Invalid atomic number: ${element.number}`);
+            if (element.period < 1 || element.period > 7) throw new Error(`Invalid period: ${element.symbol}`);
+            if (element.group < 1 || element.group > 18) throw new Error(`Invalid group: ${element.symbol}`);
+            if (!element.name || !element.mass || !element.intro) throw new Error(`Incomplete element: ${element.symbol}`);
+            numbers.add(element.number);
+            symbols.add(element.symbol);
+          }
+
+          for (const reaction of chemistry.reactions) {
+            if (!reaction.title || !reaction.equation.includes('→')) throw new Error('Incomplete reaction equation');
+            if (!reaction.category || !reaction.observation || !reaction.concept) throw new Error(`Incomplete reaction: ${reaction.title}`);
+          }
+          console.log('Validated 118 elements and 30 chemistry equations.');
           NODE
 
       - name: Check JSON files
@@ -79,15 +108,18 @@ jobs:
           python -m json.tool manifest.webmanifest > /dev/null
           python -m json.tool vercel.json > /dev/null
 
-      - name: Verify required files
+      - name: Verify required files and tabs
         run: |
           test -f index.html
           test -f styles.css
           test -f enhancements.css
-          test -f config.js
-          test -f recipes.js
-          test -f recipe-factory.js
-          test "$(find . -maxdepth 1 -name 'recipes-common-*.js' | wc -l)" -eq 13
-          test -f recipes-common-13.js
-          test -f diagrams.js
+          test -f advanced-alchemy.css
+          test -f advanced-alchemy.js
+          test -f chemistry-data.js
+          test "$(find . -maxdepth 1 -name 'chemistry-elements-*.js' | wc -l)" -eq 4
+          test -f chemistry-reactions.js
           test -f api/generate.js
+          grep -q 'id="recipeTab"' index.html
+          grep -q 'id="advancedTab"' index.html
+          grep -q 'id="periodicTable"' index.html
+          grep -q 'id="reactionGrid"' index.html
