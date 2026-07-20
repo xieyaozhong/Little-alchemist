@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "little-alchemist-v7";
+const CACHE_NAME = "little-alchemist-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./enhancements.css",
   "./advanced-alchemy.css",
   "./pharmacy-alchemy.css",
+  "./gem-alchemy.css",
   "./config.js",
   "./recipes.js",
   "./recipe-factory.js",
@@ -36,9 +37,15 @@ const APP_SHELL = [
   "./pharmacy-modules-02.js",
   "./pharmacy-modules-03.js",
   "./pharmacy-modules-04.js",
+  "./gem-data.js",
+  "./gem-minerals-01.js",
+  "./gem-minerals-02.js",
+  "./gem-minerals-03.js",
+  "./gem-minerals-04.js",
   "./app.js",
   "./advanced-alchemy.js",
   "./pharmacy-alchemy.js",
+  "./gem-alchemy.js",
   "./manifest.webmanifest",
   "./icon.svg"
 ];
