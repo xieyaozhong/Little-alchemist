@@ -4,16 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#161126" />
-  <meta name="description" content="小小煉金術士：107 種人工整理配方與 AI 助手，提供材料、圖解、步驟、原理與安全提醒。" />
+  <meta name="description" content="小小煉金術士：107 種製作配方、AI 助手、118 種元素週期表與國中常用化學反應式。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_TW" />
   <meta property="og:title" content="小小煉金術士 Little Alchemist" />
-  <meta property="og:description" content="輸入成品，由 107 種圖鑑或 AI 拆解材料、配方、圖解、步驟與原理。" />
+  <meta property="og:description" content="從生活配方進入進階煉金術，探索完整元素週期表與常用化學反應式。" />
   <title>小小煉金術士 Little Alchemist</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="enhancements.css" />
+  <link rel="stylesheet" href="advanced-alchemy.css" />
   <script src="config.js" defer></script>
   <script src="recipes.js" defer></script>
   <script src="recipe-factory.js" defer></script>
@@ -31,7 +32,14 @@
   <script src="recipes-common-12.js" defer></script>
   <script src="recipes-common-13.js" defer></script>
   <script src="diagrams.js" defer></script>
+  <script src="chemistry-data.js" defer></script>
+  <script src="chemistry-elements-01.js" defer></script>
+  <script src="chemistry-elements-02.js" defer></script>
+  <script src="chemistry-elements-03.js" defer></script>
+  <script src="chemistry-elements-04.js" defer></script>
+  <script src="chemistry-reactions.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="advanced-alchemy.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">跳到主要內容</a>
@@ -42,88 +50,133 @@
   <header class="site-header">
     <a class="brand" href="#top" aria-label="回到首頁">
       <span class="brand-mark" aria-hidden="true">⚗</span>
-      <span>
-        <strong>小小煉金術士</strong>
-        <small>Little Alchemist</small>
-      </span>
+      <span><strong>小小煉金術士</strong><small>Little Alchemist</small></span>
     </a>
-    <nav class="header-actions" aria-label="主要導覽">
+
+    <div class="main-tabs" role="tablist" aria-label="煉金術內容切換">
+      <button id="recipeTab" class="main-tab" type="button" role="tab" aria-selected="true" aria-controls="recipeView">配方圖鑑</button>
+      <button id="advancedTab" class="main-tab" type="button" role="tab" aria-selected="false" aria-controls="advancedView" tabindex="-1">進階煉金術</button>
+    </div>
+
+    <nav id="recipeActions" class="header-actions" aria-label="配方圖鑑操作">
       <button id="randomButton" class="ghost-button" type="button">隨機煉成</button>
       <button id="favoritesButton" class="ghost-button" type="button">收藏 <span id="favoriteCount">0</span></button>
     </nav>
   </header>
 
   <main id="main-content">
-    <section class="hero" id="top">
-      <div class="eyebrow">把「想做什麼」變成「下一步做什麼」</div>
-      <h1>輸入成品，<br /><span>拆解它的配方。</span></h1>
-      <p class="hero-copy">先搜尋 107 種人工整理圖鑑；未收錄的安全成品，會交由 AI 產生材料、三格圖解、製作步驟、原理解說與安全提醒。</p>
-      <div class="ai-ready-badge">107 種內建圖鑑＋AI 配方助手</div>
+    <div id="recipeView" class="tab-panel" role="tabpanel" aria-labelledby="recipeTab">
+      <section class="hero" id="top">
+        <div class="eyebrow">把「想做什麼」變成「下一步做什麼」</div>
+        <h1>輸入成品，<br /><span>拆解它的配方。</span></h1>
+        <p class="hero-copy">先搜尋 107 種人工整理圖鑑；未收錄的安全成品，會交由 AI 產生材料、三格圖解、製作步驟、原理解說與安全提醒。</p>
+        <div class="ai-ready-badge">107 種內建圖鑑＋AI 配方助手</div>
 
-      <form id="searchForm" class="search-shell" autocomplete="off">
-        <label class="sr-only" for="searchInput">輸入想製作的成品</label>
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <input id="searchInput" type="search" placeholder="例如：史萊姆、紙飛機、非牛頓流體…" maxlength="60" enterkeyhint="search" />
-        <button type="submit">開始煉成</button>
-        <div id="suggestions" class="suggestions" role="listbox" hidden></div>
-      </form>
+        <form id="searchForm" class="search-shell" autocomplete="off">
+          <label class="sr-only" for="searchInput">輸入想製作的成品</label>
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" placeholder="例如：史萊姆、紙飛機、非牛頓流體…" maxlength="60" enterkeyhint="search" />
+          <button type="submit">開始煉成</button>
+          <div id="suggestions" class="suggestions" role="listbox" hidden></div>
+        </form>
 
-      <div class="quick-picks" aria-label="熱門搜尋">
-        <span>熱門：</span>
-        <button data-query="史萊姆" type="button">史萊姆</button>
-        <button data-query="彈力球" type="button">彈力球</button>
-        <button data-query="紙飛機" type="button">紙飛機</button>
-        <button data-query="自動吸水花盆" type="button">自動吸水花盆</button>
-      </div>
-    </section>
-
-    <section class="feature-strip" aria-label="功能特色">
-      <article><b>01</b><span><strong>材料拆解</strong><small>數量與替代品</small></span></article>
-      <article><b>02</b><span><strong>三格圖解</strong><small>快速看懂流程</small></span></article>
-      <article><b>03</b><span><strong>原理解說</strong><small>知道為什麼</small></span></article>
-      <article><b>04</b><span><strong>AI 安全檢查</strong><small>先避開高風險</small></span></article>
-    </section>
-
-    <section id="resultSection" class="result-section" aria-live="polite">
-      <div id="emptyState" class="empty-state">
-        <div class="empty-symbol">✦</div>
-        <h2>煉金桌已準備完成</h2>
-        <p>從 107 種人工配方中搜尋，或輸入新的安全成品交給 AI 分析。</p>
-      </div>
-      <div id="resultContainer"></div>
-    </section>
-
-    <section class="library-section">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">107 Recipes Grimoire</span>
-          <h2>常見煉成圖鑑</h2>
+        <div class="quick-picks" aria-label="熱門搜尋">
+          <span>熱門：</span>
+          <button data-query="史萊姆" type="button">史萊姆</button>
+          <button data-query="彈力球" type="button">彈力球</button>
+          <button data-query="紙飛機" type="button">紙飛機</button>
+          <button data-query="自動吸水花盆" type="button">自動吸水花盆</button>
         </div>
-        <p>涵蓋紙藝、機械、物理、化學觀察、高分子、回收手作、藝術、園藝與氣象；每種都有材料、步驟、原理、安全提醒與三格圖解。</p>
+      </section>
+
+      <section class="feature-strip" aria-label="功能特色">
+        <article><b>01</b><span><strong>材料拆解</strong><small>數量與替代品</small></span></article>
+        <article><b>02</b><span><strong>三格圖解</strong><small>快速看懂流程</small></span></article>
+        <article><b>03</b><span><strong>原理解說</strong><small>知道為什麼</small></span></article>
+        <article><b>04</b><span><strong>AI 安全檢查</strong><small>先避開高風險</small></span></article>
+      </section>
+
+      <section id="resultSection" class="result-section" aria-live="polite">
+        <div id="emptyState" class="empty-state">
+          <div class="empty-symbol">✦</div>
+          <h2>煉金桌已準備完成</h2>
+          <p>從 107 種人工配方中搜尋，或輸入新的安全成品交給 AI 分析。</p>
+        </div>
+        <div id="resultContainer"></div>
+      </section>
+
+      <section class="library-section">
+        <div class="section-heading">
+          <div><span class="eyebrow">107 Recipes Grimoire</span><h2>常見煉成圖鑑</h2></div>
+          <p>涵蓋紙藝、機械、物理、化學觀察、高分子、回收手作、藝術、園藝與氣象；每種都有材料、步驟、原理、安全提醒與三格圖解。</p>
+        </div>
+        <div id="recipeGrid" class="recipe-grid"></div>
+      </section>
+    </div>
+
+    <section id="advancedView" class="advanced-view tab-panel" role="tabpanel" aria-labelledby="advancedTab" hidden>
+      <div class="advanced-hero">
+        <div class="eyebrow">Advanced Alchemy</div>
+        <h1>進階煉金術：<br /><span>元素與反應的地圖。</span></h1>
+        <p>從原子序、週期與族開始認識 118 種化學元素，再用國中常見反應式理解燃燒、分解、中和、置換、沉澱與生物化學。所有危險反應只提供原理與課堂辨識，不作居家操作指南。</p>
+        <div class="advanced-jumps">
+          <button type="button" data-advanced-jump="#periodicSection">查看完整元素週期表</button>
+          <button type="button" data-advanced-jump="#reactionSection">查看常用反應式</button>
+        </div>
       </div>
-      <div id="recipeGrid" class="recipe-grid"></div>
+
+      <section id="periodicSection" class="advanced-section">
+        <div class="advanced-section-heading">
+          <div><span class="eyebrow">118 Elements</span><h2>基礎化學元素週期表</h2></div>
+          <div><p>可依中文名稱、元素符號、原子序、分類或常溫狀態搜尋。點選元素可查看原子量、週期、族、分類與用途介紹。</p><div id="elementCount" class="advanced-stat">顯示 118／118 種元素</div></div>
+        </div>
+
+        <label class="advanced-search" for="elementSearch"><span aria-hidden="true">⌕</span><input id="elementSearch" type="search" placeholder="搜尋：碳、Fe、17、鹵素、氣體…" /></label>
+        <div id="elementFilters" class="advanced-filters" aria-label="元素分類篩選"></div>
+        <div id="elementDetail" class="element-detail" aria-live="polite"></div>
+
+        <div class="periodic-scroll" aria-label="元素週期表，可水平捲動">
+          <div id="periodicTable" class="periodic-grid"></div>
+          <div class="series-block"><strong>鑭系 57–71</strong><div id="lanthanideTable" class="series-grid"></div></div>
+          <div class="series-block"><strong>錒系 89–103</strong><div id="actinideTable" class="series-grid"></div></div>
+        </div>
+        <p class="periodic-note">方括號中的原子量代表常以最具代表性的同位素質量數標示。超重元素多為人工合成，部分宏觀性質仍需由實驗與理論持續確認。</p>
+      </section>
+
+      <section id="reactionSection" class="advanced-section">
+        <div class="advanced-section-heading">
+          <div><span class="eyebrow">Junior Chemistry Equations</span><h2>國中常用化學反應式</h2></div>
+          <div><p>每張卡片附平衡反應式、反應條件、可觀察現象與核心概念，協助理解係數、質量守恆與反應分類。</p><div id="reactionCount" class="advanced-stat">顯示 30／30 條反應式</div></div>
+        </div>
+
+        <div class="equation-guide" aria-label="化學反應式符號說明">
+          <article><b>→</b><span>反應物生成產物</span></article>
+          <article><b>係數</b><span>代表粒子數或莫耳數比例</span></article>
+          <article><b>↑</b><span>有氣體生成並逸出</span></article>
+          <article><b>↓</b><span>有難溶沉澱生成</span></article>
+        </div>
+
+        <label class="advanced-search" for="reactionSearch"><span aria-hidden="true">⌕</span><input id="reactionSearch" type="search" placeholder="搜尋：燃燒、中和、CO2、沉澱、鐵…" /></label>
+        <div id="reactionFilters" class="advanced-filters" aria-label="反應類型篩選"></div>
+        <div id="reactionGrid" class="reaction-grid"></div>
+        <p class="periodic-note">安全提醒：標示「教師示範」或涉及強酸、強鹼、刺激性氣體、氧化劑、活潑金屬的反應，不應在家中自行操作。</p>
+      </section>
     </section>
   </main>
 
   <footer>
-    <p>Little Alchemist · 讓製作、理解、圖解與安全在同一張配方裡。</p>
-    <p class="footer-note">所有實驗應由成人評估環境與材料；AI 內容不能取代專業安全指導。</p>
+    <p>Little Alchemist · 從製作配方走向元素、反應與科學理解。</p>
+    <p class="footer-note">所有實驗應由成人或教師評估環境與材料；AI 與知識庫內容不能取代專業安全指導。</p>
   </footer>
 
   <template id="recipeCardTemplate">
     <article class="recipe-card">
-      <div class="recipe-card-top">
-        <span class="recipe-emoji"></span>
-        <button class="card-favorite" type="button" aria-label="加入收藏">☆</button>
-      </div>
-      <span class="recipe-category"></span>
-      <h3 class="recipe-title"></h3>
-      <p class="recipe-summary"></p>
-      <div class="recipe-meta"></div>
+      <div class="recipe-card-top"><span class="recipe-emoji"></span><button class="card-favorite" type="button" aria-label="加入收藏">☆</button></div>
+      <span class="recipe-category"></span><h3 class="recipe-title"></h3><p class="recipe-summary"></p><div class="recipe-meta"></div>
       <button class="open-recipe" type="button">查看配方 <span>→</span></button>
     </article>
   </template>
 
-  <noscript><p class="noscript">這個網站需要啟用 JavaScript 才能搜尋與顯示配方。</p></noscript>
+  <noscript><p class="noscript">這個網站需要啟用 JavaScript 才能搜尋與顯示配方、元素及反應式。</p></noscript>
 </body>
 </html>
