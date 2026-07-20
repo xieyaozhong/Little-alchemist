@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "little-alchemist-v4";
+const CACHE_NAME = "little-alchemist-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -21,6 +21,7 @@ const APP_SHELL = [
   "./recipes-common-10.js",
   "./recipes-common-11.js",
   "./recipes-common-12.js",
+  "./recipes-common-13.js",
   "./diagrams.js",
   "./app.js",
   "./manifest.webmanifest",
