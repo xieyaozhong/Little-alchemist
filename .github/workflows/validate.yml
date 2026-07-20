@@ -17,6 +17,7 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
+          node --check config.js
           node --check app.js
           node --check recipes.js
           node --check diagrams.js
@@ -33,4 +34,6 @@ jobs:
           test -f index.html
           test -f styles.css
           test -f enhancements.css
+          test -f config.js
+          test -f diagrams.js
           test -f api/generate.js
