@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#161126" />
-  <meta name="description" content="小小煉金術士：輸入想做的成品，取得材料、配方、簡單圖解、製作方式、科學原理與安全提醒。" />
+  <meta name="description" content="小小煉金術士：106 種人工整理配方與 AI 助手，提供材料、圖解、步驟、原理與安全提醒。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_TW" />
   <meta property="og:title" content="小小煉金術士 Little Alchemist" />
-  <meta property="og:description" content="輸入成品，由圖鑑或 AI 拆解材料、配方、圖解、步驟與原理。" />
+  <meta property="og:description" content="輸入成品，由 106 種圖鑑或 AI 拆解材料、配方、圖解、步驟與原理。" />
   <title>小小煉金術士 Little Alchemist</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -16,6 +16,19 @@
   <link rel="stylesheet" href="enhancements.css" />
   <script src="config.js" defer></script>
   <script src="recipes.js" defer></script>
+  <script src="recipe-factory.js" defer></script>
+  <script src="recipes-common-01.js" defer></script>
+  <script src="recipes-common-02.js" defer></script>
+  <script src="recipes-common-03.js" defer></script>
+  <script src="recipes-common-04.js" defer></script>
+  <script src="recipes-common-05.js" defer></script>
+  <script src="recipes-common-06.js" defer></script>
+  <script src="recipes-common-07.js" defer></script>
+  <script src="recipes-common-08.js" defer></script>
+  <script src="recipes-common-09.js" defer></script>
+  <script src="recipes-common-10.js" defer></script>
+  <script src="recipes-common-11.js" defer></script>
+  <script src="recipes-common-12.js" defer></script>
   <script src="diagrams.js" defer></script>
   <script src="app.js" defer></script>
 </head>
@@ -43,13 +56,13 @@
     <section class="hero" id="top">
       <div class="eyebrow">把「想做什麼」變成「下一步做什麼」</div>
       <h1>輸入成品，<br /><span>拆解它的配方。</span></h1>
-      <p class="hero-copy">先搜尋人工整理圖鑑；未收錄的安全成品，會交由 AI 產生材料、三格圖解、製作步驟、原理解說與安全提醒。</p>
-      <div class="ai-ready-badge">內建圖鑑＋AI 配方助手</div>
+      <p class="hero-copy">先搜尋 106 種人工整理圖鑑；未收錄的安全成品，會交由 AI 產生材料、三格圖解、製作步驟、原理解說與安全提醒。</p>
+      <div class="ai-ready-badge">106 種內建圖鑑＋AI 配方助手</div>
 
       <form id="searchForm" class="search-shell" autocomplete="off">
         <label class="sr-only" for="searchInput">輸入想製作的成品</label>
         <span class="search-icon" aria-hidden="true">⌕</span>
-        <input id="searchInput" type="search" placeholder="例如：彈力球、氣球火箭、紙橋模型…" maxlength="60" enterkeyhint="search" />
+        <input id="searchInput" type="search" placeholder="例如：紙飛機、非牛頓流體、自動吸水花盆…" maxlength="60" enterkeyhint="search" />
         <button type="submit">開始煉成</button>
         <div id="suggestions" class="suggestions" role="listbox" hidden></div>
       </form>
@@ -57,9 +70,9 @@
       <div class="quick-picks" aria-label="熱門搜尋">
         <span>熱門：</span>
         <button data-query="彈力球" type="button">彈力球</button>
-        <button data-query="橡皮筋動力車" type="button">橡皮筋動力車</button>
-        <button data-query="熔岩燈" type="button">熔岩燈</button>
-        <button data-query="檸檬電池" type="button">檸檬電池</button>
+        <button data-query="紙飛機" type="button">紙飛機</button>
+        <button data-query="非牛頓流體" type="button">非牛頓流體</button>
+        <button data-query="自動吸水花盆" type="button">自動吸水花盆</button>
       </div>
     </section>
 
@@ -74,7 +87,7 @@
       <div id="emptyState" class="empty-state">
         <div class="empty-symbol">✦</div>
         <h2>煉金桌已準備完成</h2>
-        <p>先輸入一個想完成的作品，或從熱門項目開始。</p>
+        <p>從 106 種人工配方中搜尋，或輸入新的安全成品交給 AI 分析。</p>
       </div>
       <div id="resultContainer"></div>
     </section>
@@ -82,10 +95,10 @@
     <section class="library-section">
       <div class="section-heading">
         <div>
-          <span class="eyebrow">Starter Grimoire</span>
-          <h2>入門煉成圖鑑</h2>
+          <span class="eyebrow">106 Recipes Grimoire</span>
+          <h2>常見煉成圖鑑</h2>
         </div>
-        <p>人工整理配方會優先顯示；AI 產生的內容會清楚標示為草稿，並只保留在目前瀏覽工作階段。</p>
+        <p>涵蓋紙藝、機械、物理、化學觀察、回收手作、藝術、園藝與氣象；每種都有材料、步驟、原理、安全提醒與三格圖解。</p>
       </div>
       <div id="recipeGrid" class="recipe-grid"></div>
     </section>
